@@ -1,0 +1,185 @@
+.about-page {
+  background-image: 
+    linear-gradient(rgba(46, 7, 63, 0.9), rgba(46, 7, 63, 0.9)),
+    url('../assets/image3.png');
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
+
+.about-page .page-hero {
+  background-color: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.about-page .workflow-section,
+.about-page .testimonials-section-about {
+  background: transparent !important;
+}
+
+.page-padding {
+  padding-top: var(--header-height);
+}
+
+.page-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: var(--text-dark);
+}
+
+.page-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Section elements */
+.section-title-left {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.section-title-left::after {
+  content: '';
+  display: block;
+  width: 50px;
+  height: 4px;
+  background-color: var(--primary);
+  margin-top: 10px;
+}
+
+.about-cta-wrapper {
+  margin-top: 30px;
+}
+
+/* Graphics grid */
+.profile-graphics-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.graphics-card {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.3s ease;
+}
+
+.graphics-card:hover {
+  transform: translateX(5px);
+  border-color: var(--primary);
+  box-shadow: var(--hover-shadow);
+}
+
+.graphic-icon {
+  color: var(--secondary);
+}
+
+.graphics-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.graphics-card p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Workflow cards */
+.workflow-grid-about {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.workflow-card-about {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 30px 24px;
+  box-shadow: var(--card-shadow);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.workflow-card-about:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary);
+  box-shadow: var(--hover-shadow);
+}
+
+.workflow-number-badge {
+  position: absolute;
+  top: -20px;
+  left: 24px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--secondary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(4, 107, 210, 0.3);
+}
+
+.workflow-card-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 10px 0 12px;
+}
+
+.workflow-card-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* Team Grid */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
+  margin-top: 40px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .workflow-grid-about {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+  }
+
+  .team-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .workflow-grid-about {
+    grid-template-columns: 1fr;
+  }
+
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-title {
+    font-size: 2.2rem;
+  }
+}

@@ -1,0 +1,27 @@
+.legal-text-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--text-dark);
+}
+
+.legal-text-wrapper p {
+  margin-bottom: 24px;
+}
+
+.legal-text-wrapper h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 40px 0 16px;
+  color: var(--text-dark);
+}
+
+.legal-text-wrapper ul {
+  margin-bottom: 24px;
+  padding-left: 24px;
+}
+
+.legal-text-wrapper li {
+  margin-bottom: 12px;
+}

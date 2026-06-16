@@ -1,0 +1,5 @@
+.main-content-area {
+  flex: 1 0 auto;
+  min-height: calc(100vh - var(--header-height));
+  background-color: var(--bg-primary);
+}
