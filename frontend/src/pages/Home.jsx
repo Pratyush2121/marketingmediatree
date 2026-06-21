@@ -11,7 +11,7 @@ import Carousel from '../components/Carousel';
 import Accordion from '../components/Accordion';
 import BrandSlider from '../components/BrandSlider';
 import { servicesData, faqData, testimonialData } from '../data/mockData';
-import heroVideo from '../assets/i_want_a _marketing_media_tree.mp4';
+import heroVideo from '../assets/WhatsApp Video 2026-06-18 at 19.39.57.mp4';
 import imageHome from '../assets/imagehome.png';
 import img2 from '../assets/img2.png';
 import img3 from '../assets/img3.png';
@@ -47,7 +47,7 @@ const AnimatedCircularStat = ({ stat }) => {
   }, [inView, stat.value]);
 
   const isCompleted = value === stat.value;
-  const pathColor = isCompleted ? '#61CE70' : '#6EC1E4'; // Green when loaded, light blue while loading
+  const pathColor = isCompleted ? '#61CE70' : '#C084FC'; // Green when loaded, light purple while loading
 
   return (
     <div className="stat-card" ref={ref}>
@@ -168,28 +168,10 @@ export default function Home() {
     <div className="home-page">
       {/* Hero Section */}
       <section className="hero-section">
-        <video className="hero-bg-video" autoPlay loop muted playsInline>
-          <source src={heroVideo} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        <video className="hero-bg-video" src={heroVideo} autoPlay loop muted playsInline />
         <div className="hero-overlay" />
         <div className="container hero-container">
           <div className="hero-content float-animation">
-            <h1 className="hero-title">
-              Cultivate Brand Growth with <span className="text-gradient">Marketing Media Tree</span>
-            </h1>
-            <p className="hero-subtitle">
-              We empower businesses in New Delhi and globally to thrive online. Partner with us for data-driven SEO, creative SMM, high-conversion PPC, and high-performance website development.
-            </p>
-            <div className="hero-buttons">
-              <Link to="/our-services" className="btn btn-primary btn-lg">
-                Our Services
-                <ArrowRight size={18} style={{ marginLeft: '8px' }} />
-              </Link>
-              <a href={presentationPdf} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-lg">
-                View Presentation
-              </a>
-            </div>
           </div>
         </div>
       </section>

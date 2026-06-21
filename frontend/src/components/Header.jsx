@@ -41,10 +41,9 @@ export default function Header() {
             <span className="top-bar-text">info@marketingmediatree.com</span>
           </div>
           <div className="top-bar-right">
-            <a href="#" className="social-icon" aria-label="Instagram"><FaInstagram size={16} /></a>
-            <a href="#" className="social-icon" aria-label="Facebook"><FaFacebookF size={16} /></a>
-            <a href="#" className="social-icon" aria-label="LinkedIn"><FaLinkedinIn size={16} /></a>
-            <a href="#" className="social-icon" aria-label="Twitter"><FaTwitter size={16} /></a>
+            <a href="https://www.instagram.com/marketingmediatree/" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram"><FaInstagram size={16} /></a>
+            <a href="https://www.facebook.com/people/Marketing-Media-Tree/61573917923386/" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Facebook"><FaFacebookF size={16} /></a>
+            <a href="https://www.linkedin.com/company/marketing-media-tree/?viewAsMember=true" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="LinkedIn"><FaLinkedinIn size={16} /></a>
           </div>
         </div>
       </div>

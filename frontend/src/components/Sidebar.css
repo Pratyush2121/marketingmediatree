@@ -52,7 +52,8 @@
   outline: none;
   border-color: var(--secondary);
   background-color: white;
-  box-shadow: 0 0 0 3px rgba(4, 107, 210, 0.1);
+  color: #1a0324;
+  box-shadow: 0 0 0 3px rgba(199, 21, 133, 0.1);
 }
 
 .search-bar-icon {
@@ -90,7 +91,7 @@
 
 .category-filter-btn:hover,
 .category-filter-btn.selected {
-  background-color: rgba(4, 107, 210, 0.05);
+  background-color: rgba(199, 21, 133, 0.05);
   color: var(--secondary);
 }
 

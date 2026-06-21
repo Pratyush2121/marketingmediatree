@@ -35,13 +35,7 @@
 }
 
 /* Grid Layout */
-.blog-grid-layout {
-  display: grid;
-  grid-template-columns: 2.2fr 1fr;
-  gap: 50px;
-  align-items: start;
-  padding: 60px 0;
-}
+
 
 .posts-list-grid {
   display: flex;
@@ -278,10 +272,7 @@
 /* ────────── RESPONSIVENESS ────────── */
 
 @media (max-width: 991px) {
-  .blog-grid-layout {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
+
   
   .blog-page .page-title {
     font-size: 2.4rem;

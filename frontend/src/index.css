@@ -1,8 +1,8 @@
 :root {
   /* Colors */
-  --primary: #6EC1E4;
-  --secondary: #046bd2;
-  --secondary-hover: #035aa3;
+  --primary: #C084FC;
+  --secondary: #c71585;
+  --secondary-hover: #a80f70;
   --accent: #61CE70;
   --dark-accent: #2E073F;
   --bg-primary: #2E073F;
@@ -14,7 +14,7 @@
   --border-color: #e2e8f0;
   --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.03);
   --hover-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15);
-  --glow-shadow: 0 0 20px rgba(110, 193, 228, 0.3);
+  --glow-shadow: 0 0 20px rgba(192, 132, 252, 0.3);
 
   /* Fonts */
   --font-heading: 'Lato', sans-serif;
@@ -97,13 +97,13 @@ button,
   background-color: var(--secondary);
   color: white;
   padding: 12px 28px;
-  box-shadow: 0 4px 12px rgba(4, 107, 210, 0.2);
+  box-shadow: 0 4px 12px rgba(199, 21, 133, 0.2);
 }
 
 .btn-primary:hover {
   background-color: var(--secondary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(4, 107, 210, 0.3);
+  box-shadow: 0 8px 20px rgba(199, 21, 133, 0.3);
 }
 
 .btn-secondary {
@@ -269,7 +269,7 @@ h6 {
 }
 
 .flip-card-back {
-  background: linear-gradient(135deg, var(--secondary) 0%, #1e40af 100%);
+  background: linear-gradient(135deg, var(--secondary) 0%, #4c1d95 100%);
   color: white;
   transform: rotateY(180deg);
 }
@@ -311,5 +311,34 @@ h6 {
   .grid-2 {
     grid-template-columns: 1fr !important;
     gap: 40px !important;
+  }
+}
+
+/* Global Responsive Layout Utilities */
+.blog-grid-layout {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr;
+  gap: 50px;
+  align-items: start;
+  padding: 60px 0;
+}
+
+@media (max-width: 991px) {
+  .blog-grid-layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
   }
 }

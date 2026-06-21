@@ -34,14 +34,14 @@
 }
 
 .admin-menu-btn:hover {
-  background-color: rgba(4, 107, 210, 0.02);
+  background-color: rgba(199, 21, 133, 0.02);
   color: var(--secondary);
 }
 
 .admin-menu-btn.active {
   background-color: var(--secondary);
   color: white;
-  box-shadow: 0 4px 10px rgba(4, 107, 210, 0.2);
+  box-shadow: 0 4px 10px rgba(199, 21, 133, 0.2);
 }
 
 /* Content Panel */
@@ -200,7 +200,7 @@
   border: 1px solid var(--border-color);
   font-family: var(--font-body);
   font-size: 0.95rem;
-  color: var(--text-dark);
+  color: #1a0324;
   background-color: white;
 }
 

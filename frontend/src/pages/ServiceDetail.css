@@ -16,7 +16,7 @@
 }
 
 .detail-hero {
-  background: linear-gradient(135deg, rgba(4, 107, 210, 0.03) 0%, rgba(110, 193, 228, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(199, 21, 133, 0.03) 0%, rgba(192, 132, 252, 0.1) 100%);
   border: 1px solid var(--border-color);
   border-radius: 24px;
   padding: 60px 40px;
@@ -380,7 +380,7 @@
 }
 
 .contact-cta-card {
-  background: linear-gradient(135deg, var(--secondary) 0%, #1e3a8a 100%);
+  background: linear-gradient(135deg, var(--secondary) 0%, #581c87 100%);
   color: white;
   border: none;
 }

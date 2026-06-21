@@ -240,3 +240,11 @@
   height: 100%;
   object-fit: cover;
 }
+
+@media (max-width: 480px) {
+  .comment-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}

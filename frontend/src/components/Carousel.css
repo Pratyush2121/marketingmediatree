@@ -87,7 +87,7 @@
   background-color: var(--secondary);
   color: white;
   border-color: var(--secondary);
-  box-shadow: 0 8px 16px rgba(4, 107, 210, 0.2);
+  box-shadow: 0 8px 16px rgba(199, 21, 133, 0.2);
 }
 
 .carousel-control.prev {
@@ -110,14 +110,14 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: rgba(4, 107, 210, 0.2);
+  background-color: rgba(199, 21, 133, 0.2);
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .carousel-dot:hover {
-  background-color: rgba(4, 107, 210, 0.5);
+  background-color: rgba(199, 21, 133, 0.5);
 }
 
 .carousel-dot.active {

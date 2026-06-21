@@ -34,7 +34,7 @@
 
 .tab-btn:hover {
   color: var(--secondary);
-  background-color: rgba(4, 107, 210, 0.02);
+  background-color: rgba(199, 21, 133, 0.02);
 }
 
 .tab-btn.active {

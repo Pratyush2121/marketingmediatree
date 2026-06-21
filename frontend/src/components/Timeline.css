@@ -9,6 +9,7 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 30px;
   position: relative;
+  overflow: hidden;
 }
 
 .timeline-card-item {
@@ -41,7 +42,7 @@
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: 0 4px 10px rgba(4, 107, 210, 0.3);
+  box-shadow: 0 4px 10px rgba(199, 21, 133, 0.3);
 }
 
 .step-number {
