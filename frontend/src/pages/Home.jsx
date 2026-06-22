@@ -17,6 +17,7 @@ import img2 from '../assets/img2.png';
 import img3 from '../assets/img3.png';
 import img4 from '../assets/img4.png';
 import img5 from '../assets/img5.png';
+import useSEO from '../hooks/useSEO';
 import './Home.css';
 
 const AnimatedCircularStat = ({ stat }) => {
@@ -80,6 +81,9 @@ export default function Home() {
     description: ''
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useSEO();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -93,27 +97,40 @@ export default function Home() {
     e.preventDefault();
     if (!formData.firstName || !formData.email) return;
 
-    // Retrieve existing submissions or initialize empty array
-    const existingSubmissions = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
-    const newSubmission = {
-      id: Date.now(),
-      ...formData,
-      date: new Date().toLocaleString()
-    };
+    setIsSubmitting(true);
 
-    localStorage.setItem('contactSubmissions', JSON.stringify([...existingSubmissions, newSubmission]));
-    setFormSubmitted(true);
+    fetch('/api/contacts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    })
+      .then(res => res.json())
+      .then(data => {
+        setIsSubmitting(false);
+        if (data.success) {
+          setFormSubmitted(true);
 
-    // Clear Form
-    setFormData({
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      description: ''
-    });
+          // Clear Form
+          setFormData({
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            description: ''
+          });
 
-    setTimeout(() => setFormSubmitted(false), 5000);
+          setTimeout(() => setFormSubmitted(false), 5000);
+        } else {
+          alert('Submission failed: ' + (data.message || 'Unknown error'));
+        }
+      })
+      .catch(err => {
+        setIsSubmitting(false);
+        console.error('Error submitting contact lead:', err);
+        alert('Error submitting message. Please try again.');
+      });
   };
 
 
@@ -389,8 +406,12 @@ export default function Home() {
                   />
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-block form-submit-btn">
-                  Submit Message
+                 <button 
+                  type="submit" 
+                  className="btn btn-primary btn-block form-submit-btn"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit Message'}
                 </button>
               </form>
             )}

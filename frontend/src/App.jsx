@@ -33,7 +33,7 @@ export default function App() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/contact-us" element={<Contact />} />
-          <Route path="/adminjasmine" element={<Admin />} />
+          <Route path="/adminmejasmine" element={<Admin />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
           <Route path="*" element={<Navigate to="/" replace />} />

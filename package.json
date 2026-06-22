@@ -1,1 +1,28 @@
- 
+{
+  "name": "marketing-media-tree-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build && node -e \"const fs = require('fs'); fs.cpSync('dist', '../dist', { recursive: true })\"",
+    "vercel-build": "cd frontend && npm install && npm run build && node -e \"const fs = require('fs'); fs.cpSync('dist', '../dist', { recursive: true })\"",
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.3",
+    "multer": "^1.4.5-lts.1",
+    "serverless-http": "^3.2.0",
+    "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

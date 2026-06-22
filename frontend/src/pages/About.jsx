@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ArrowDownToLine, Users, CheckCircle, ShieldCheck } from 'lucide-react';
 import FlipCard from '../components/FlipCard';
 import Carousel from '../components/Carousel';
 import { teamData, testimonialData } from '../data/mockData';
+import useSEO from '../hooks/useSEO';
 import './About.css';
 
 export default function About() {
+  useSEO();
+  
   const profilePdf = "https://drive.google.com/file/d/1bBdYMbuNH8XDN6dl4VZ-4xbg98qmllWj/view?usp=sharing";
 
   const workflowSteps = [

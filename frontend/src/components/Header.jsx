@@ -10,6 +10,31 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
 
+  const [headerSettings, setHeaderSettings] = useState({
+    logoUrl: '',
+    email: 'info@marketingmediatree.com',
+    phone: '+91 96962 17440',
+    socialLinks: {
+      instagram: 'https://www.instagram.com/marketingmediatree/',
+      facebook: 'https://www.facebook.com/people/Marketing-Media-Tree/61573917923386/',
+      linkedin: 'https://www.linkedin.com/company/marketing-media-tree/?viewAsMember=true'
+    }
+  });
+
+  useEffect(() => {
+    fetch('/api/settings/header')
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.success && resData.data) {
+          setHeaderSettings(prev => ({
+            ...prev,
+            ...resData.data
+          }));
+        }
+      })
+      .catch(err => console.error('Error loading header settings:', err));
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -38,19 +63,25 @@ export default function Header() {
       <div className="header-top-bar">
         <div className="container header-top-bar-inner">
           <div className="top-bar-left">
-            <span className="top-bar-text">info@marketingmediatree.com</span>
+            <span className="top-bar-text">{headerSettings.email}</span>
           </div>
           <div className="top-bar-right">
-            <a href="https://www.instagram.com/marketingmediatree/" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram"><FaInstagram size={16} /></a>
-            <a href="https://www.facebook.com/people/Marketing-Media-Tree/61573917923386/" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Facebook"><FaFacebookF size={16} /></a>
-            <a href="https://www.linkedin.com/company/marketing-media-tree/?viewAsMember=true" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="LinkedIn"><FaLinkedinIn size={16} /></a>
+            {headerSettings.socialLinks?.instagram && (
+              <a href={headerSettings.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram"><FaInstagram size={16} /></a>
+            )}
+            {headerSettings.socialLinks?.facebook && (
+              <a href={headerSettings.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Facebook"><FaFacebookF size={16} /></a>
+            )}
+            {headerSettings.socialLinks?.linkedin && (
+              <a href={headerSettings.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="LinkedIn"><FaLinkedinIn size={16} /></a>
+            )}
           </div>
         </div>
       </div>
       <header className={`site-header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="container header-container">
           <Link to="/" className="header-logo">
-            <img src={logoImg} alt="Marketing Media Tree Logo" className="logo-img-asset" />
+            <img src={headerSettings.logoUrl || logoImg} alt="Marketing Media Tree Logo" className="logo-img-asset" />
           </Link>
 
           {/* Desktop Nav */}

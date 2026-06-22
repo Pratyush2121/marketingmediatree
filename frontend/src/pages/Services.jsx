@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Check } from 'lucide-react';
 import Carousel from '../components/Carousel';
 import { servicesData, testimonialData } from '../data/mockData';
+import useSEO from '../hooks/useSEO';
 import './Services.css';
 
 export default function Services() {
+  useSEO();
   return (
     <div className="services-page page-padding">
       {/* Page Hero Banner */}

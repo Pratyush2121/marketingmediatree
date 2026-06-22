@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Calendar, User, ArrowLeft, Send, MessageSquare } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
-import { initialBlogsData } from '../data/mockData';
+import useSEO from '../hooks/useSEO';
 import './BlogPost.css';
 
 export default function BlogPost() {
   const { slug } = useParams();
   const [blog, setBlog] = useState(null);
-  const [blogsList, setBlogsList] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   // Comment Form State
   const [commentData, setCommentData] = useState({
@@ -20,30 +20,39 @@ export default function BlogPost() {
   });
   const [commentSubmitted, setCommentSubmitted] = useState(false);
 
-  // Load blogs list and current blog from local storage or mock data
+  // Load blog details from API
   useEffect(() => {
-    const localBlogs = localStorage.getItem('blogPosts');
-    let currentBlogs = initialBlogsData;
-    
-    if (localBlogs) {
-      currentBlogs = JSON.parse(localBlogs);
-    } else {
-      localStorage.setItem('blogPosts', JSON.stringify(initialBlogsData));
-    }
-    
-    setBlogsList(currentBlogs);
-    
-    const matchedBlog = currentBlogs.find((b) => b.slug === slug);
-    setBlog(matchedBlog);
+    setLoading(true);
+    fetch(`/api/blogs/slug/${slug}`)
+      .then(res => res.json())
+      .then(resData => {
+        setLoading(false);
+        if (resData.success && resData.blog) {
+          setBlog(resData.blog);
+        } else {
+          setBlog(false); // Indicates blog not found
+        }
+      })
+      .catch(err => {
+        setLoading(false);
+        console.error('Error loading article:', err);
+        setBlog(false);
+      });
   }, [slug]);
 
-  if (blog === undefined) {
-    // If useEffect is still running, return a loading indicator
+  // Inject SEO metadata tags for this post dynamically
+  useSEO(blog ? {
+    metaTitle: blog.metaTitle || blog.title,
+    metaDescription: blog.metaDescription || blog.excerpt,
+    ogImageUrl: blog.image
+  } : null);
+
+  if (loading) {
     return <div className="page-padding text-center">Loading article details...</div>;
   }
 
   // Handle fallback redirect if slug not found
-  if (blogsList.length > 0 && !blog) {
+  if (blog === false) {
     return <Navigate to="/blog" replace />;
   }
 
@@ -59,42 +68,43 @@ export default function BlogPost() {
     e.preventDefault();
     if (!commentData.author || !commentData.text) return;
 
-    const newComment = {
-      id: Date.now().toString(),
-      author: commentData.author,
-      date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-      text: commentData.text
-    };
+    fetch(`/api/blogs/slug/${slug}/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        author: commentData.author,
+        text: commentData.text
+      })
+    })
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.success) {
+          setBlog(prev => ({
+            ...prev,
+            comments: resData.comments
+          }));
 
-    // Update specific blog in the complete list
-    const updatedBlogs = blogsList.map((b) => {
-      if (b.id === blog.id) {
-        return {
-          ...b,
-          comments: [...(b.comments || []), newComment]
-        };
-      }
-      return b;
-    });
+          // Clear comment body only, optionally save credentials based on consent checkbox
+          setCommentData((prev) => ({
+            ...prev,
+            text: '',
+            author: prev.consent ? prev.author : '',
+            email: prev.consent ? prev.email : '',
+            url: prev.consent ? prev.url : ''
+          }));
 
-    localStorage.setItem('blogPosts', JSON.stringify(updatedBlogs));
-    setBlogsList(updatedBlogs);
-    setBlog({
-      ...blog,
-      comments: [...(blog.comments || []), newComment]
-    });
-
-    // Clear comment body only, optionally save credentials based on consent checkbox
-    setCommentData((prev) => ({
-      ...prev,
-      text: '',
-      author: prev.consent ? prev.author : '',
-      email: prev.consent ? prev.email : '',
-      url: prev.consent ? prev.url : ''
-    }));
-
-    setCommentSubmitted(true);
-    setTimeout(() => setCommentSubmitted(false), 4000);
+          setCommentSubmitted(true);
+          setTimeout(() => setCommentSubmitted(false), 4000);
+        } else {
+          alert('Failed to post comment: ' + (resData.message || 'Unknown error'));
+        }
+      })
+      .catch(err => {
+        console.error('Error submitting comment:', err);
+        alert('Error posting comment. Please try again.');
+      });
   };
 
   return (

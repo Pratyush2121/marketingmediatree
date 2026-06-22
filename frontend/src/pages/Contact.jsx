@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Phone, Mail, MapPin, Send, MessageSquare } from 'lucide-react';
 import './Contact.css';
 
@@ -11,6 +11,48 @@ export default function Contact() {
     description: ''
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [contactInfo, setContactInfo] = useState({
+    companyName: 'Marketing Media Tree',
+    address: 'Plot no 307 Third Floor, Kakrola Market 16/6 Housing Complex, Main Road, New Delhi 110078',
+    email: 'info@marketingmediatree.com',
+    phone: '+91 96962 17440',
+    whatsapp: '919696217440'
+  });
+
+  const [mapData, setMapData] = useState({
+    embedUrl: '',
+    iframeCode: ''
+  });
+
+  useEffect(() => {
+    // Fetch Contact Coordinates
+    fetch('/api/settings/contactinfo')
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.success && resData.data) {
+          setContactInfo(prev => ({
+            ...prev,
+            ...resData.data
+          }));
+        }
+      })
+      .catch(err => console.error('Error fetching contact coordinates:', err));
+
+    // Fetch Map Setup
+    fetch('/api/maps')
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.success && resData.map) {
+          setMapData({
+            embedUrl: resData.map.embedUrl,
+            iframeCode: resData.map.iframeCode
+          });
+        }
+      })
+      .catch(err => console.error('Error fetching map configuration:', err));
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -24,28 +66,44 @@ export default function Contact() {
     e.preventDefault();
     if (!formData.firstName || !formData.email) return;
 
-    // Retrieve existing contact submissions
-    const existingSubmissions = JSON.parse(localStorage.getItem('contactSubmissions') || '[]');
-    const newSubmission = {
-      id: Date.now(),
-      ...formData,
-      date: new Date().toLocaleString()
-    };
-    
-    localStorage.setItem('contactSubmissions', JSON.stringify([...existingSubmissions, newSubmission]));
-    setFormSubmitted(true);
-    
-    // Reset inputs
-    setFormData({
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      description: ''
-    });
+    setIsSubmitting(true);
 
-    setTimeout(() => setFormSubmitted(false), 5000);
+    fetch('/api/contacts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    })
+      .then(res => res.json())
+      .then(data => {
+        setIsSubmitting(false);
+        if (data.success) {
+          setFormSubmitted(true);
+          
+          // Reset inputs
+          setFormData({
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            description: ''
+          });
+
+          setTimeout(() => setFormSubmitted(false), 5000);
+        } else {
+          alert('Submission failed: ' + (data.message || 'Unknown error'));
+        }
+      })
+      .catch(err => {
+        setIsSubmitting(false);
+        console.error('Error submitting form:', err);
+        alert('Error sending message. Please try again later.');
+      });
   };
+
+  // Helper to check if map is valid
+  const hasMap = mapData.iframeCode || mapData.embedUrl;
 
   return (
     <div className="contact-page page-padding">
@@ -75,7 +133,7 @@ export default function Contact() {
                 <Phone className="info-card-icon" />
                 <div className="info-card-text">
                   <h3>Phone Number</h3>
-                  <a href="tel:+919696217440">+91 96962 17440</a>
+                  <a href={`tel:${contactInfo.phone?.replace(/\s+/g, '')}`}>{contactInfo.phone}</a>
                   <p className="availability">Mon - Sat, 9:00 AM - 7:00 PM</p>
                 </div>
               </div>
@@ -84,7 +142,7 @@ export default function Contact() {
                 <Mail className="info-card-icon" />
                 <div className="info-card-text">
                   <h3>Email Address</h3>
-                  <a href="mailto:info@marketingmediatree.com">info@marketingmediatree.com</a>
+                  <a href={`mailto:${contactInfo.email}`}>{contactInfo.email}</a>
                   <p className="availability">Direct support queries</p>
                 </div>
               </div>
@@ -93,23 +151,46 @@ export default function Contact() {
                 <MapPin className="info-card-icon" />
                 <div className="info-card-text">
                   <h3>Delhi Office Address</h3>
-                  <span>Plot no 307 Third Floor, Kakrola Market 16/6 Housing Complex, Main Road, New Delhi 110078</span>
+                  <span>{contactInfo.address}</span>
                   <p className="availability">Near Dwarka Mor Metro Station</p>
                 </div>
               </div>
             </div>
 
-            {/* Custom Interactive SVG Map Mockup */}
+            {/* Custom Map Area */}
             <div className="map-mockup-container">
-              <div className="map-badge">Interactive Map</div>
-              <div className="map-canvas">
-                <div className="map-grid-pattern"></div>
-                <div className="map-marker-glow animate-pulse"></div>
-                <div className="map-pin-badge">
-                  <MapPin size={20} color="white" />
-                  <span>Marketing Media Tree</span>
-                </div>
-              </div>
+              {hasMap ? (
+                mapData.iframeCode ? (
+                  <div 
+                    dangerouslySetInnerHTML={{ __html: mapData.iframeCode }} 
+                    style={{ width: '100%', height: '100%', border: 'none' }} 
+                    className="map-iframe-wrapper"
+                  />
+                ) : (
+                  <iframe
+                    src={mapData.embedUrl}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen=""
+                    loading="lazy"
+                    title="Google Map Location"
+                  />
+                )
+              ) : (
+                /* Fallback Map Mockup */
+                <>
+                  <div className="map-badge">Interactive Map</div>
+                  <div className="map-canvas">
+                    <div className="map-grid-pattern"></div>
+                    <div className="map-marker-glow animate-pulse"></div>
+                    <div className="map-pin-badge">
+                      <MapPin size={20} color="white" />
+                      <span>{contactInfo.companyName}</span>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -191,8 +272,12 @@ export default function Contact() {
                   />
                 </div>
 
-                <button type="submit" className="btn btn-primary form-submit-btn">
-                  Submit Form
+                <button 
+                  type="submit" 
+                  className="btn btn-primary form-submit-btn" 
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit Form'}
                 </button>
               </form>
             )}

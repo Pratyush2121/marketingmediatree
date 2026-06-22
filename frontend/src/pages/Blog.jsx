@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, ChevronRight, FolderOpen, ArrowRight } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
-import { initialBlogsData } from '../data/mockData';
+import useSEO from '../hooks/useSEO';
 import './Blog.css';
 
 export default function Blog() {
@@ -10,23 +10,25 @@ export default function Blog() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const postsPerPage = 6;
 
-  // Load posts, incorporating local updates from admin panel if any
+  useSEO();
+
+  // Load posts from Mongoose API
   useEffect(() => {
-    const localBlogs = localStorage.getItem('blogPosts');
-    if (localBlogs) {
-      const parsed = JSON.parse(localBlogs);
-      if (parsed.length < 12) {
-        localStorage.setItem('blogPosts', JSON.stringify(initialBlogsData));
-        setBlogs(initialBlogsData);
-      } else {
-        setBlogs(parsed);
-      }
-    } else {
-      localStorage.setItem('blogPosts', JSON.stringify(initialBlogsData));
-      setBlogs(initialBlogsData);
-    }
+    fetch('/api/blogs')
+      .then(res => res.json())
+      .then(resData => {
+        setLoading(false);
+        if (resData.success && resData.blogs) {
+          setBlogs(resData.blogs);
+        }
+      })
+      .catch(err => {
+        setLoading(false);
+        console.error('Error loading blogs:', err);
+      });
   }, []);
 
   // Filter posts based on search input and active category
