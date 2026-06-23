@@ -107,30 +107,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* Team Grid */}
-      <section className="section team-section">
-        <div className="container">
-          <div className="section-title-wrapper">
-            <h2 className="section-title">Meet Our Leadership Team</h2>
-            <p className="section-subtitle">
-              The creative minds and technical strategists guiding campaigns to success from our New Delhi headquarters.
-            </p>
-          </div>
 
-          <div className="team-grid">
-            {teamData.map((member) => (
-              <FlipCard
-                key={member.id}
-                title={member.name}
-                description={member.role}
-                backTitle={member.name}
-                backDescription={member.bio}
-                iconName="User"
-              />
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Testimonials */}
       <section className="section section-bg testimonials-section-about">

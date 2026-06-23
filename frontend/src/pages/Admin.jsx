@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { 
   Mail, FileText, Send, Trash2, Plus, CheckCircle, Database, 
   LayoutDashboard, Settings, Map, Search, Image, LogOut, 
-  Globe, Lock, ExternalLink, FileSpreadsheet, Edit3, Eye, EyeOff, Clipboard, Upload
+  Globe, Lock, ExternalLink, FileSpreadsheet, Edit3, Eye, EyeOff, Clipboard, Upload,
+  Users, Briefcase
 } from 'lucide-react';
 import './Admin.css';
 
@@ -84,6 +85,20 @@ export default function Admin() {
   const [mediaList, setMediaList] = useState([]);
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
 
+  // Client Management State
+  const [clients, setClients] = useState([]);
+  const [clientFormMode, setClientFormMode] = useState('list'); // 'list', 'add', 'edit'
+  const [selectedClientId, setSelectedClientId] = useState(null);
+  const [clientForm, setClientForm] = useState({ name: '', logoUrl: '', details: '' });
+  const [isSavingClient, setIsSavingClient] = useState(false);
+
+  // Project Management State
+  const [projects, setProjects] = useState([]);
+  const [projectFormMode, setProjectFormMode] = useState('list'); // 'list', 'add', 'edit'
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [projectForm, setProjectForm] = useState({ title: '', description: '', imageUrl: '', link: '', category: 'SEO' });
+  const [isSavingProject, setIsSavingProject] = useState(false);
+
   // Authentication check on mount
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
@@ -128,9 +143,11 @@ export default function Admin() {
       fetch('/api/settings/footer').then(res => res.json()),
       fetch('/api/settings/contactinfo').then(res => res.json()),
       fetch('/api/settings/seo').then(res => res.json()),
-      fetch('/api/maps').then(res => res.json())
+      fetch('/api/maps').then(res => res.json()),
+      fetch('/api/settings/clients').then(res => res.json()),
+      fetch('/api/settings/projects').then(res => res.json())
     ])
-      .then(([blogsData, leadsData, mediaData, headerData, footerData, contactData, seoData, mapsData]) => {
+      .then(([blogsData, leadsData, mediaData, headerData, footerData, contactData, seoData, mapsData, clientsData, projectsData]) => {
         if (blogsData.success) {
           setBlogs(blogsData.blogs);
         }
@@ -157,6 +174,12 @@ export default function Admin() {
             embedUrl: mapsData.map.embedUrl,
             iframeCode: mapsData.map.iframeCode
           });
+        }
+        if (clientsData && clientsData.success && Array.isArray(clientsData.data)) {
+          setClients(clientsData.data);
+        }
+        if (projectsData && projectsData.success && Array.isArray(projectsData.data)) {
+          setProjects(projectsData.data);
         }
 
         setStats({
@@ -537,6 +560,196 @@ export default function Admin() {
       .catch(err => console.error('Error deleting media:', err));
   };
 
+  // --- CLIENTS MANAGEMENT HANDLERS ---
+  const handleClientFormChange = (e) => {
+    const { name, value } = e.target;
+    setClientForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCreateClientBtn = () => {
+    setClientForm({ name: '', logoUrl: '', details: '' });
+    setClientFormMode('add');
+  };
+
+  const handleEditClientBtn = (client) => {
+    setSelectedClientId(client.id || client._id);
+    setClientForm({
+      name: client.name || '',
+      logoUrl: client.logoUrl || '',
+      details: client.details || ''
+    });
+    setClientFormMode('edit');
+  };
+
+  const handleSaveClient = (e) => {
+    e.preventDefault();
+    if (!clientForm.name) return;
+
+    setIsSavingClient(true);
+    let updatedClients = [];
+
+    if (clientFormMode === 'add') {
+      const newClient = {
+        id: 'c_' + Date.now() + Math.random().toString(36).substr(2, 5),
+        ...clientForm
+      };
+      updatedClients = [...clients, newClient];
+    } else {
+      updatedClients = clients.map(c => 
+        (c.id === selectedClientId || c._id === selectedClientId) 
+          ? { ...c, ...clientForm } 
+          : c
+      );
+    }
+
+    const token = localStorage.getItem('adminToken');
+    fetch('/api/settings/clients', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ data: updatedClients })
+    })
+      .then(res => res.json())
+      .then(data => {
+        setIsSavingClient(false);
+        if (data.success) {
+          setClientFormMode('list');
+          setClients(updatedClients);
+          alert(clientFormMode === 'add' ? 'Client added!' : 'Client updated!');
+        } else {
+          alert('Save failed: ' + data.message);
+        }
+      })
+      .catch(err => {
+        setIsSavingClient(false);
+        console.error('Error saving client:', err);
+      });
+  };
+
+  const handleDeleteClient = (clientId) => {
+    if (!window.confirm('Are you sure you want to delete this client?')) return;
+
+    const updatedClients = clients.filter(c => c.id !== clientId && c._id !== clientId);
+    const token = localStorage.getItem('adminToken');
+
+    fetch('/api/settings/clients', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ data: updatedClients })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setClients(updatedClients);
+          alert('Client deleted.');
+        } else {
+          alert('Delete failed: ' + data.message);
+        }
+      })
+      .catch(err => console.error('Error deleting client:', err));
+  };
+
+  // --- PROJECTS MANAGEMENT HANDLERS ---
+  const handleProjectFormChange = (e) => {
+    const { name, value } = e.target;
+    setProjectForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCreateProjectBtn = () => {
+    setProjectForm({ title: '', description: '', imageUrl: '', link: '', category: 'SEO' });
+    setProjectFormMode('add');
+  };
+
+  const handleEditProjectBtn = (project) => {
+    setSelectedProjectId(project.id || project._id);
+    setProjectForm({
+      title: project.title || '',
+      description: project.description || '',
+      imageUrl: project.imageUrl || '',
+      link: project.link || '',
+      category: project.category || 'SEO'
+    });
+    setProjectFormMode('edit');
+  };
+
+  const handleSaveProject = (e) => {
+    e.preventDefault();
+    if (!projectForm.title) return;
+
+    setIsSavingProject(true);
+    let updatedProjects = [];
+
+    if (projectFormMode === 'add') {
+      const newProject = {
+        id: 'p_' + Date.now() + Math.random().toString(36).substr(2, 5),
+        ...projectForm
+      };
+      updatedProjects = [...projects, newProject];
+    } else {
+      updatedProjects = projects.map(p => 
+        (p.id === selectedProjectId || p._id === selectedProjectId) 
+          ? { ...p, ...projectForm } 
+          : p
+      );
+    }
+
+    const token = localStorage.getItem('adminToken');
+    fetch('/api/settings/projects', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ data: updatedProjects })
+    })
+      .then(res => res.json())
+      .then(data => {
+        setIsSavingProject(false);
+        if (data.success) {
+          setProjectFormMode('list');
+          setProjects(updatedProjects);
+          alert(projectFormMode === 'add' ? 'Project added!' : 'Project updated!');
+        } else {
+          alert('Save failed: ' + data.message);
+        }
+      })
+      .catch(err => {
+        setIsSavingProject(false);
+        console.error('Error saving project:', err);
+      });
+  };
+
+  const handleDeleteProject = (projectId) => {
+    if (!window.confirm('Are you sure you want to delete this project?')) return;
+
+    const updatedProjects = projects.filter(p => p.id !== projectId && p._id !== projectId);
+    const token = localStorage.getItem('adminToken');
+
+    fetch('/api/settings/projects', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ data: updatedProjects })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setProjects(updatedProjects);
+          alert('Project deleted.');
+        } else {
+          alert('Delete failed: ' + data.message);
+        }
+      })
+      .catch(err => console.error('Error deleting project:', err));
+  };
+
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
     alert('URL copied to clipboard!');
@@ -697,6 +910,20 @@ export default function Admin() {
             >
               <Image size={18} />
               <span>Media Library</span>
+            </button>
+            <button 
+              className={`admin-menu-btn ${activeTab === 'clients' ? 'active' : ''}`}
+              onClick={() => { setActiveTab('clients'); setClientFormMode('list'); }}
+            >
+              <Users size={18} />
+              <span>Manage Clients</span>
+            </button>
+            <button 
+              className={`admin-menu-btn ${activeTab === 'projects' ? 'active' : ''}`}
+              onClick={() => { setActiveTab('projects'); setProjectFormMode('list'); }}
+            >
+              <Briefcase size={18} />
+              <span>Manage Projects</span>
             </button>
           </div>
 
@@ -1455,6 +1682,296 @@ export default function Admin() {
                   </div>
                 ) : (
                   <p style={{ fontStyle: 'italic', color: 'var(--text-muted)', marginTop: '20px' }}>No files uploaded yet in the Database repository.</p>
+                )}
+              </div>
+            )}
+
+            {/* MODULE 10: MANAGE CLIENTS */}
+            {activeTab === 'clients' && (
+              <div className="tab-view clients-view animate-fade-in">
+                <div className="panel-title-row">
+                  <h2>Clients Directory</h2>
+                  {clientFormMode === 'list' && (
+                    <button className="btn btn-primary btn-sm" onClick={handleCreateClientBtn}>
+                      <Plus size={14} style={{ marginRight: '6px' }} /> Add Client
+                    </button>
+                  )}
+                  {clientFormMode !== 'list' && (
+                    <button className="btn btn-secondary btn-sm" onClick={() => setClientFormMode('list')}>
+                      Back to Directory
+                    </button>
+                  )}
+                </div>
+
+                {/* CLIENT FORM (CREATE / EDIT) */}
+                {clientFormMode !== 'list' && (
+                  <div className="add-post-accordion">
+                    <h3>{clientFormMode === 'add' ? 'Add New Client' : 'Edit Client Details'}</h3>
+                    <form onSubmit={handleSaveClient} className="add-post-form" style={{ marginTop: '20px' }}>
+                      <div className="form-group">
+                        <label>Client/Company Name *</label>
+                        <input 
+                          type="text" 
+                          name="name" 
+                          required 
+                          value={clientForm.name} 
+                          onChange={handleClientFormChange}
+                          placeholder="e.g. Acme Corp"
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label>Client Logo Image URL *</label>
+                        <input 
+                          type="text" 
+                          name="logoUrl" 
+                          required 
+                          value={clientForm.logoUrl} 
+                          onChange={handleClientFormChange} 
+                          placeholder="https://images.unsplash.com/..."
+                        />
+                        <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            id="client-logo-upload" 
+                            style={{ display: 'none' }} 
+                            onChange={(e) => handleImageUpload(e.target.files[0], (url) => setClientForm(prev => ({ ...prev, logoUrl: url })))}
+                          />
+                          <label htmlFor="client-logo-upload" className="btn btn-outline btn-sm" style={{ cursor: 'pointer' }}>
+                            <Upload size={14} style={{ marginRight: '6px' }} /> Upload Logo
+                          </label>
+                          {clientForm.logoUrl && <span style={{ fontSize: '0.85rem', color: '#61CE70' }}>Image Ready!</span>}
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label>Client Details / Tagline</label>
+                        <input 
+                          type="text" 
+                          name="details" 
+                          value={clientForm.details} 
+                          onChange={handleClientFormChange}
+                          placeholder="e.g. A global leader in logistics and product delivery."
+                        />
+                      </div>
+
+                      <button type="submit" className="btn btn-primary" style={{ marginTop: '20px' }} disabled={isSavingClient}>
+                        {isSavingClient ? 'Saving...' : 'Save Client'}
+                      </button>
+                    </form>
+                  </div>
+                )}
+
+                {/* CLIENTS DIRECTORY TABLE */}
+                {clientFormMode === 'list' && (
+                  <div className="admin-posts-list">
+                    {clients.length > 0 ? (
+                      <div className="admin-posts-table-wrapper">
+                        <table className="admin-posts-table">
+                          <thead>
+                            <tr>
+                              <th>Logo</th>
+                              <th>Name</th>
+                              <th>Details</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {clients.map((client, idx) => (
+                              <tr key={client.id || idx}>
+                                <td style={{ width: '80px' }}>
+                                  <div style={{ width: '40px', height: '40px', borderRadius: '4px', overflow: 'hidden', backgroundColor: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <img src={client.logoUrl} alt={client.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                                  </div>
+                                </td>
+                                <td><strong>{client.name}</strong></td>
+                                <td>{client.details || <span style={{ fontStyle: 'italic', color: 'var(--text-muted)' }}>None</span>}</td>
+                                <td>
+                                  <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button 
+                                      className="delete-sub-btn" 
+                                      onClick={() => handleEditClientBtn(client)}
+                                      style={{ color: '#C084FC' }}
+                                    >
+                                      <Edit3 size={16} />
+                                    </button>
+                                    <button className="delete-post-row-btn" onClick={() => handleDeleteClient(client.id || client._id)}>
+                                      <Trash2 size={16} />
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <p className="no-posts-alert-admin">No clients recorded. Add one above to start!</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* MODULE 11: MANAGE PROJECTS */}
+            {activeTab === 'projects' && (
+              <div className="tab-view projects-view animate-fade-in">
+                <div className="panel-title-row">
+                  <h2>Projects Showcase Directory</h2>
+                  {projectFormMode === 'list' && (
+                    <button className="btn btn-primary btn-sm" onClick={handleCreateProjectBtn}>
+                      <Plus size={14} style={{ marginRight: '6px' }} /> Add Project
+                    </button>
+                  )}
+                  {projectFormMode !== 'list' && (
+                    <button className="btn btn-secondary btn-sm" onClick={() => setProjectFormMode('list')}>
+                      Back to Directory
+                    </button>
+                  )}
+                </div>
+
+                {/* PROJECT FORM (CREATE / EDIT) */}
+                {projectFormMode !== 'list' && (
+                  <div className="add-post-accordion">
+                    <h3>{projectFormMode === 'add' ? 'Add New Project' : 'Edit Project Details'}</h3>
+                    <form onSubmit={handleSaveProject} className="add-post-form" style={{ marginTop: '20px' }}>
+                      <div className="form-group">
+                        <label>Project Title *</label>
+                        <input 
+                          type="text" 
+                          name="title" 
+                          required 
+                          value={projectForm.title} 
+                          onChange={handleProjectFormChange}
+                          placeholder="e.g. SEO Rankings Optimization"
+                        />
+                      </div>
+
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label>Category *</label>
+                          <select name="category" value={projectForm.category} onChange={handleProjectFormChange}>
+                            <option value="SEO">SEO</option>
+                            <option value="PPC">PPC</option>
+                            <option value="Social Media Marketing">Social Media Marketing</option>
+                            <option value="Website Development">Website Development</option>
+                            <option value="Content Marketing">Content Marketing</option>
+                            <option value="Email Marketing">Email Marketing</option>
+                          </select>
+                        </div>
+                        <div className="form-group">
+                          <label>Project Link (Optional)</label>
+                          <input 
+                            type="url" 
+                            name="link" 
+                            value={projectForm.link} 
+                            onChange={handleProjectFormChange} 
+                            placeholder="https://example.com"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label>Project Image URL *</label>
+                        <input 
+                          type="text" 
+                          name="imageUrl" 
+                          required 
+                          value={projectForm.imageUrl} 
+                          onChange={handleProjectFormChange} 
+                          placeholder="https://images.unsplash.com/..."
+                        />
+                        <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            id="project-img-upload" 
+                            style={{ display: 'none' }} 
+                            onChange={(e) => handleImageUpload(e.target.files[0], (url) => setProjectForm(prev => ({ ...prev, imageUrl: url })))}
+                          />
+                          <label htmlFor="project-img-upload" className="btn btn-outline btn-sm" style={{ cursor: 'pointer' }}>
+                            <Upload size={14} style={{ marginRight: '6px' }} /> Upload Project Screenshot
+                          </label>
+                          {projectForm.imageUrl && <span style={{ fontSize: '0.85rem', color: '#61CE70' }}>Image Ready!</span>}
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label>Project Description *</label>
+                        <textarea 
+                          name="description" 
+                          rows="4" 
+                          required 
+                          value={projectForm.description} 
+                          onChange={handleProjectFormChange}
+                          placeholder="Brief description of the work and results achieved..."
+                        />
+                      </div>
+
+                      <button type="submit" className="btn btn-primary" style={{ marginTop: '20px' }} disabled={isSavingProject}>
+                        {isSavingProject ? 'Saving...' : 'Save Project'}
+                      </button>
+                    </form>
+                  </div>
+                )}
+
+                {/* PROJECTS DIRECTORY TABLE */}
+                {projectFormMode === 'list' && (
+                  <div className="admin-posts-list">
+                    {projects.length > 0 ? (
+                      <div className="admin-posts-table-wrapper">
+                        <table className="admin-posts-table">
+                          <thead>
+                            <tr>
+                              <th>Screenshot</th>
+                              <th>Title</th>
+                              <th>Category</th>
+                              <th>Description</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {projects.map((project, idx) => (
+                              <tr key={project.id || idx}>
+                                <td style={{ width: '100px' }}>
+                                  <div style={{ width: '60px', height: '40px', borderRadius: '4px', overflow: 'hidden', backgroundColor: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <img src={project.imageUrl} alt={project.title} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'cover' }} />
+                                  </div>
+                                </td>
+                                <td>
+                                  <strong>{project.title}</strong>
+                                  {project.link && (
+                                    <a href={project.link} target="_blank" rel="noopener noreferrer" style={{ marginLeft: '6px', color: 'var(--primary)' }}>
+                                      <ExternalLink size={12} style={{ display: 'inline' }} />
+                                    </a>
+                                  )}
+                                </td>
+                                <td><span className="service-category-badge" style={{ margin: 0, padding: '2px 8px', fontSize: '0.75rem' }}>{project.category}</span></td>
+                                <td style={{ fontSize: '0.85rem', color: 'var(--text-muted)', maxInlineSize: '250px', overflow: 'hidden', textOverflow: 'ellipsis' }}>{project.description}</td>
+                                <td>
+                                  <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button 
+                                      className="delete-sub-btn" 
+                                      onClick={() => handleEditProjectBtn(project)}
+                                      style={{ color: '#C084FC' }}
+                                    >
+                                      <Edit3 size={16} />
+                                    </button>
+                                    <button className="delete-post-row-btn" onClick={() => handleDeleteProject(project.id || project._id)}>
+                                      <Trash2 size={16} />
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <p className="no-posts-alert-admin">No projects recorded. Add one above to start!</p>
+                    )}
+                  </div>
                 )}
               </div>
             )}

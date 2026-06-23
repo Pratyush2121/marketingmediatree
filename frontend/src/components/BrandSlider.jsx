@@ -1,8 +1,8 @@
 import React from 'react';
 import './BrandSlider.css';
 
-export default function BrandSlider() {
-  const brands = [
+export default function BrandSlider({ clients = [] }) {
+  const defaultBrands = [
     { name: "Acme Corp" },
     { name: "GlobalTech" },
     { name: "Vortex Co" },
@@ -13,15 +13,21 @@ export default function BrandSlider() {
     { name: "Skyline Ventures" }
   ];
 
+  const displayClients = clients && clients.length > 0 ? clients : defaultBrands;
+
   // Duplicate items for loop
-  const displayBrands = [...brands, ...brands, ...brands];
+  const displayBrands = [...displayClients, ...displayClients, ...displayClients];
 
   return (
     <div className="brand-slider-container">
       <div className="brand-track">
         {displayBrands.map((brand, index) => (
           <div key={index} className="brand-logo-item">
-            <span className="brand-logo-text">{brand.name}</span>
+            {brand.logoUrl ? (
+              <img src={brand.logoUrl} alt={brand.name} className="brand-logo-image" />
+            ) : (
+              <span className="brand-logo-text">{brand.name}</span>
+            )}
           </div>
         ))}
       </div>

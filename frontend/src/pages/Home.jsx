@@ -11,7 +11,7 @@ import Carousel from '../components/Carousel';
 import Accordion from '../components/Accordion';
 import BrandSlider from '../components/BrandSlider';
 import { servicesData, faqData, testimonialData } from '../data/mockData';
-import heroVideo from '../assets/WhatsApp Video 2026-06-18 at 19.39.57.mp4';
+import heroVideo from '../assets/WhatsApp Video 2026-06-24 at 01.33.56.mp4';
 import imageHome from '../assets/imagehome.png';
 import img2 from '../assets/img2.png';
 import img3 from '../assets/img3.png';
@@ -82,6 +82,42 @@ export default function Home() {
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Dynamic Clients & Projects State
+  const defaultClients = [
+    { id: "c1", name: "Acme Corp", logoUrl: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200&h=200&fit=crop", details: "Logistics and delivery solutions" },
+    { id: "c2", name: "GlobalTech", logoUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=200&h=200&fit=crop", details: "Enterprise IT solutions" },
+    { id: "c3", name: "Vortex Co", logoUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop", details: "Digital marketing services" },
+    { id: "c4", name: "Innovate Ltd", logoUrl: "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&h=200&fit=crop", details: "Creative brand architectures" },
+    { id: "c5", name: "Synergy digital", logoUrl: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=200&h=200&fit=crop", details: "Web strategy coordinates" },
+    { id: "c6", name: "Apex Group", logoUrl: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=200&h=200&fit=crop", details: "Corporate growth advisory" },
+    { id: "c7", name: "Zenith Marketing", logoUrl: "https://images.unsplash.com/photo-1542744094-3a31f103e35f?w=200&h=200&fit=crop", details: "Search presence amplification" },
+    { id: "c8", name: "Skyline Ventures", logoUrl: "https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=200&h=200&fit=crop", details: "Venture investments & development" }
+  ];
+
+  const [clients, setClients] = useState(defaultClients);
+  const [projects, setProjects] = useState([]);
+  const [activeCategory, setActiveCategory] = useState('All');
+
+  useEffect(() => {
+    fetch('/api/settings/clients')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.data)) {
+          setClients(data.data);
+        }
+      })
+      .catch(err => console.error('Error fetching clients:', err));
+
+    fetch('/api/settings/projects')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.data)) {
+          setProjects(data.data);
+        }
+      })
+      .catch(err => console.error('Error fetching projects:', err));
+  }, []);
 
   useSEO();
 
@@ -249,7 +285,7 @@ export default function Home() {
                 backTitle={service.title}
                 backDescription={service.tagline}
                 iconName={service.iconName}
-                linkTo={`/our-services`}
+                linkTo={`/our-services/${service.slug}`}
                 buttonText="Learn Details"
               />
             ))}
@@ -287,8 +323,37 @@ export default function Home() {
       </section>
 
 
-      {/* Brand Scroll slider */}
-      <BrandSlider />
+
+
+
+      {/* Our Clients Showcase Section */}
+      {clients && clients.length > 0 && (
+        <section className="section home-clients-section">
+          <div className="container">
+            <div className="section-title-wrapper">
+              <span className="section-badge">OUR PARTNERS</span>
+              <h2 className="section-title">Our Trusted Clients</h2>
+              <p className="section-subtitle">
+                Discover the businesses and retail brands we have helped grow online.
+              </p>
+            </div>
+
+            <div className="home-clients-grid">
+              {clients.map((client, idx) => (
+                <div key={client.id || idx} className="home-client-card animate-fade-in">
+                  <div className="home-client-logo-wrapper">
+                    <img src={client.logoUrl} alt={client.name} className="home-client-logo-img" />
+                  </div>
+                  <div className="home-client-card-info">
+                    <h3 className="home-client-card-name">{client.name}</h3>
+                    <p className="home-client-card-desc">{client.details || "Growth partner."}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Testimonials section */}
       <section className="section testimonials-section">
