@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import BrandSlider from '../components/BrandSlider';
 import useSEO from '../hooks/useSEO';
 import './OurClients.css';
 
@@ -30,11 +29,6 @@ export default function OurClients() {
           </p>
         </div>
       </section>
-
-      {/* Dynamic Marquee Section */}
-      <div style={{ marginTop: '20px', marginBottom: '20px' }}>
-        <BrandSlider clients={clients} />
-      </div>
 
       {/* Clients Row List Section */}
       <section className="section clients-list-section">
