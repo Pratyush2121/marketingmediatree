@@ -61,6 +61,9 @@ const updateSettings = async (req, res) => {
     let setting = await Setting.findOne({ key });
     if (setting) {
       setting.data = data;
+      if (typeof setting.markModified === 'function') {
+        setting.markModified('data');
+      }
       await setting.save();
     } else {
       setting = await Setting.create({ key, data });

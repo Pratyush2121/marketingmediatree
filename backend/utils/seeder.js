@@ -86,10 +86,28 @@ const seedData = async () => {
     ];
 
     for (const setting of defaultSettings) {
-      const exists = await Setting.findOne({ key: setting.key });
-      if (!exists) {
+      let doc = await Setting.findOne({ key: setting.key });
+      if (!doc) {
         await Setting.create(setting);
         console.log(`Seeded default settings for: ${setting.key}`);
+      } else if (setting.key === 'clients') {
+        let modified = false;
+        const currentData = Array.isArray(doc.data) ? doc.data : [];
+        for (const defaultClient of setting.data) {
+          const hasClient = currentData.some(c => c.name.trim().toLowerCase() === defaultClient.name.trim().toLowerCase());
+          if (!hasClient) {
+            currentData.push(defaultClient);
+            modified = true;
+          }
+        }
+        if (modified) {
+          doc.data = currentData;
+          if (typeof doc.markModified === 'function') {
+            doc.markModified('data');
+          }
+          await doc.save();
+          console.log('Added missing predefined clients to database.');
+        }
       }
     }
 
