@@ -47,26 +47,24 @@ const AnimatedCircularStat = ({ stat }) => {
     }
   }, [inView, stat.value]);
 
-  const isCompleted = value === stat.value;
-  const pathColor = isCompleted ? '#61CE70' : '#C084FC'; // Green when loaded, light purple while loading
-
   return (
-    <div className="stat-card" ref={ref}>
+    <div className="stat-card" ref={ref} style={{ '--stat-glow': stat.color }}>
       <div className="circular-progress-container">
         <CircularProgressbar
           value={value}
           maxValue={stat.maxValue}
           text={`${value}${stat.suffix}`}
           styles={buildStyles({
-            pathColor: pathColor,
+            pathColor: stat.color,
             textColor: '#ffffff',
-            trailColor: 'rgba(255, 255, 255, 0.1)',
-            textSize: '18px',
-            pathTransition: 'none',
+            trailColor: 'rgba(255, 255, 255, 0.08)',
+            textSize: '20px',
+            strokeLinecap: 'round',
+            pathTransition: 'stroke-dashoffset 0.5s ease 0s',
           })}
         />
       </div>
-      <div className="stat-icon-box">{stat.icon}</div>
+      <div className="stat-icon-box" style={{ color: stat.color, backgroundColor: `${stat.color}18` }}>{stat.icon}</div>
       <p className="stat-label">{stat.label}</p>
     </div>
   );
@@ -209,10 +207,10 @@ export default function Home() {
   ];
 
   const stats = [
-    { value: 250, maxValue: 250, suffix: "+", label: "Projects Completed", icon: <Trophy size={28} /> },
-    { value: 96, maxValue: 100, suffix: "%", label: "Client Satisfaction", icon: <Star size={28} /> },
-    { value: 10, maxValue: 10, suffix: "+", label: "Industries Served", icon: <Users size={28} /> },
-    { value: 13, maxValue: 15, suffix: "+", label: "Marketing Awards", icon: <BarChart2 size={28} /> }
+    { value: 250, maxValue: 250, suffix: "+", label: "Projects Done", color: "#FF5DA2", icon: <Trophy size={28} /> },
+    { value: 96, maxValue: 100, suffix: "%", label: "Client Satisfaction", color: "#B5E61D", icon: <Star size={28} /> },
+    { value: 10, maxValue: 10, suffix: "+", label: "Industries", color: "#FFAA1D", icon: <Users size={28} /> },
+    { value: 13, maxValue: 15, suffix: "+", label: "Award Winning", color: "#5CE1E6", icon: <BarChart2 size={28} /> }
   ];
 
   const presentationPdf = "https://drive.google.com/file/d/1i4SEiT_rElCs12LCbeIuyA6-rkctC3E9/view?usp=sharing";

@@ -74,4 +74,14 @@ function applySEO(seo) {
     }
     canonicalLink.setAttribute('href', seo.canonicalUrl);
   }
+
+  // 4. Favicon
+  let favicon = document.querySelector("link[rel='icon']");
+  if (!favicon) {
+    favicon = document.createElement('link');
+    favicon.setAttribute('rel', 'icon');
+    document.head.appendChild(favicon);
+  }
+  favicon.setAttribute('type', 'image/png');
+  favicon.setAttribute('href', '/logo.png');
 }

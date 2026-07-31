@@ -123,6 +123,12 @@
   transform: translateY(-3px);
 }
 
+.social-icon.social-youtube:hover {
+  background-color: #ff0000;
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.4);
+}
+
 .footer-heading {
   color: white;
   font-size: 1.2rem;
