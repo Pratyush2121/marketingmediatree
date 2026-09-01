@@ -324,15 +324,15 @@ export default function Home() {
 
 
 
-      {/* Our Clients Showcase Section */}
+      {/* Portfolio & Clients Showcase Section */}
       {clients && clients.length > 0 && (
         <section className="section home-clients-section">
           <div className="container">
             <div className="section-title-wrapper">
-              <span className="section-badge">OUR PARTNERS</span>
-              <h2 className="section-title">Our Trusted Clients</h2>
+              <span className="section-badge">PORTFOLIO</span>
+              <h2 className="section-title">Our Trusted Clients & Portfolio</h2>
               <p className="section-subtitle">
-                Discover the businesses and retail brands we have helped grow online.
+                Discover the businesses, retail brands, and successful digital projects we have built and managed.
               </p>
             </div>
 
@@ -348,6 +348,12 @@ export default function Home() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            <div className="text-center" style={{ marginTop: '40px' }}>
+              <Link to="/portfolio" className="btn btn-outline">
+                Explore Full Portfolio & Projects
+              </Link>
             </div>
           </div>
         </section>

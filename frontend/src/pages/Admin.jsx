@@ -721,6 +721,7 @@ export default function Admin() {
       .catch(err => {
         setIsSavingProject(false);
         console.error('Error saving project:', err);
+        alert('Error saving project. Please check if your admin login session is active.');
       });
   };
 

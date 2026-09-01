@@ -15,7 +15,7 @@ import Contact from './pages/Contact';
 import Admin from './pages/Admin';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
-import OurClients from './pages/OurClients';
+import Portfolio from './pages/Portfolio';
 
 import './App.css';
 
@@ -30,7 +30,8 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/our-services" element={<Services />} />
           <Route path="/our-services/:slug" element={<ServiceDetail />} />
-          <Route path="/our-clients" element={<OurClients />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/our-clients" element={<Navigate to="/portfolio" replace />} />
           <Route path="/about-us" element={<About />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
